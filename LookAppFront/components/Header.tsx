@@ -1,21 +1,44 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Header() {
+  const { theme, colors, toggleTheme } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <Pressable>
-        <Ionicons name="sunny-outline" size={24} color="#4E4187" />
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.background,
+          borderColor: colors.border,
+        },
+      ]}
+    >
+      <Pressable
+        onPress={toggleTheme}
+        style={({ pressed }) => [
+          styles.themeToggleButton,
+          {
+            backgroundColor: pressed ? colors.secondary : "transparent",
+            opacity: pressed ? 0.7 : 1,
+            borderColor: colors.secondary,
+          },
+        ]}
+      >
+        <Ionicons
+          name={theme === "light" ? "sunny-outline" : "moon-outline"}
+          size={24}
+          color={colors.secondary}
+        />
       </Pressable>
 
-      <Text style={styles.title}>LooK</Text>
+      <View style={styles.titleWrapper}>
+        <Text style={[styles.title, { color: colors.secondary }]}>LooK</Text>
+      </View>
 
-      <Pressable>
-        <Ionicons
-          name="chatbubble-ellipses-outline"
-          size={24}
-          color="#4E4187"
-        />
+      <Pressable style={styles.invisibleSpacer}>
+        <Ionicons name="sunny-outline" size={24} color="transparent" />
       </Pressable>
     </View>
   );
@@ -23,10 +46,8 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    borderColor: "#4E4187",
     borderWidth: 2,
     marginTop: "10%",
     width: "95%",
@@ -36,10 +57,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
   },
+  titleWrapper: {
+    flex: 1,
+    alignItems: "center",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     fontStyle: "italic",
-    color: "#4E4187",
+  },
+  themeToggleButton: {
+    padding: 5,
+    borderRadius: 25,
+    borderWidth: 1,
+  },
+  invisibleSpacer: {
+    padding: 5,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "transparent",
+    backgroundColor: "transparent",
   },
 });
