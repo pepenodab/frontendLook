@@ -7,40 +7,73 @@ import {
   Modal,
   Pressable,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
+import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function RegisterScreen() {
+  const { theme, colors, toggleTheme } = useTheme();
+  const { register } = useAuth();
   const [userInfo, setUserInfo] = useState({
     email: "",
     user: "",
     pswd: "",
   });
 
+  /**
+   * Handles the user registration process.
+   * Validates if all fields are completed.
+   * Attempts to register the user with the provided credentials.
+   * If successful, displays a success alert and navigates to the login screen.
+   * If unsuccessful, displays an error alert with a descriptive message.
+   */
+  const handleRegister = async () => {
+    if (!userInfo.email || !userInfo.user || !userInfo.pswd) {
+      Alert.alert("Error", "Por favor, completa todos los campos.");
+      return;
+    }
+
+    try {
+      console.log(userInfo.email, userInfo.user, userInfo.pswd);
+      await register(userInfo.email, userInfo.user, userInfo.pswd);
+      Alert.alert("Éxito", "¡Registro exitoso! Ahora puedes iniciar sesión.");
+      router.push("login");
+    } catch (error) {
+      let errorMessage = "Ocurrió un error durante el registro.";
+      Alert.alert("Error de registro", errorMessage);
+    }
+  };
+
   return (
     <>
       <StatusBar hidden={true} />
-      <View style={styles.container}>
-        <Text style={styles.title}>LooK</Text>
-        <View style={styles.modal_container}>
+      <View style={[styles.container, { backgroundColor: colors.primary }]}>
+        <Text style={[styles.title, { color: colors.secondary }]}>LooK</Text>
+        <View
+          style={[
+            styles.modalContainer,
+            { backgroundColor: colors.card, borderColor: colors.secondary },
+          ]}
+        >
           <View style={styles.row}>
-            {/* <FontAwesomeIcon
-                    size={35}
-                    icon={faSun}
-                    style={styles.theme_button}
-                  /> */}
-            <Text style={styles.sub_title}>Registrate</Text>
+            <Text style={[styles.subTitle, { color: colors.secondary }]}>
+              Regístrate
+            </Text>
           </View>
           <View>
-            <Text style={styles.input_text}>Introduce tu email: </Text>
+            <Text style={[styles.inputText, { color: colors.secondary }]}>
+              Introduce tu email:{" "}
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Usuario..."
               value={userInfo.email}
               onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
             />
-            <Text style={styles.input_text}>
+            <Text style={[styles.inputText, { color: colors.secondary }]}>
               Introduce tu nombre de usuario:{" "}
             </Text>
             <TextInput
@@ -49,7 +82,9 @@ export default function RegisterScreen() {
               value={userInfo.user}
               onChangeText={(text) => setUserInfo({ ...userInfo, user: text })}
             />
-            <Text style={styles.input_text}>Introduce la contraseña: </Text>
+            <Text style={[styles.inputText, { color: colors.secondary }]}>
+              Introduce la contraseña:{" "}
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Contraseña..."
@@ -58,16 +93,31 @@ export default function RegisterScreen() {
               secureTextEntry
             />
           </View>
-          <Pressable style={styles.send_button} onPress={() => {}}>
-            <Text style={styles.text_button}>Registrate</Text>
+          <Pressable
+            style={[
+              styles.sendButton,
+              {
+                backgroundColor: colors.primary,
+                borderColor: colors.secondary,
+              },
+            ]}
+            onPress={handleRegister}
+          >
+            <Text style={[styles.textButton, { color: colors.secondary }]}>
+              Regístrate
+            </Text>
           </Pressable>
-          <Text style={styles.help_text}>¿Ya tienes cuenta?</Text>
+          <Text style={[styles.helpText, { color: colors.secondary }]}>
+            ¿Ya tienes cuenta?
+          </Text>
           <Pressable
             onPress={() => {
               router.push("login");
             }}
           >
-            <Text style={styles.text_button}>Pulsa aqui.</Text>
+            <Text style={[styles.textButton, { color: colors.secondary }]}>
+              Pulsa aquí.
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -82,7 +132,7 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
   },
-  modal_container: {
+  modalContainer: {
     width: "90%",
     height: "80%",
     backgroundColor: "#FFF",
@@ -98,7 +148,7 @@ const styles = StyleSheet.create({
     height: "8%",
     backgroundColor: "lightgray",
   },
-  input_text: {
+  inputText: {
     width: 200,
     textAlign: "center",
     color: "#4E4187",
@@ -113,24 +163,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  sub_title: {
+  subTitle: {
     color: "#4E4187",
     fontSize: 50,
     fontWeight: "bold",
     textAlign: "center",
   },
-  text_button: {
+  textButton: {
     color: "#4E4187",
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
-  help_text: {
+  helpText: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
-  send_button: {
+  sendButton: {
     borderColor: "#4E4187",
     borderWidth: 2,
     color: "#4E4187",
@@ -141,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: "10%",
   },
-  theme_button: {
+  themeButton: {
     borderRadius: "100%",
     borderWidth: 2,
     borderColor: "black",
