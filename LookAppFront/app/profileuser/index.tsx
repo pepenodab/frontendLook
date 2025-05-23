@@ -2,23 +2,21 @@ import { View, StyleSheet } from "react-native";
 import Footer from "../../components/Footer";
 import ProfileScreen from "../../components/ProfileScreen";
 import Header from "../../components/Header";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function ProfileUser() {
+  const { theme, colors, toggleTheme } = useTheme();
+  const { userId } = useLocalSearchParams();
+  console.log("ID del usuario:", userId);
+  const currentUserId = userId as string;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.primary }]}>
       <Header />
-      <View style={styles.body}>
-        <ProfileScreen
-          username={"Pepe"}
-          seguidores={10}
-          seguidos={10}
-          publicaciones={10}
-          imagenes={[
-            "https://images.unsplash.com/photo-1617781754299-d1d0e2e4b5f0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            "https://images.unsplash.com/photo-1617781754299-d1d0e2e4b5f0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            "https://images.unsplash.com/photo-1617781754299-d1d0e2e4b5f0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-          ]}
-        />
+      <View style={[styles.body, { borderColor: colors.secondary }]}>
+        <ProfileScreen userId={currentUserId} />
       </View>
       <Footer />
     </View>
