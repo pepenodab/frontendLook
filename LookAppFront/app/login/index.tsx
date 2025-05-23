@@ -2,74 +2,107 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Pressable,
+  StyleSheet,
   StatusBar,
-  Modal,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function LoginScreen() {
+  const { theme, colors, toggleTheme } = useTheme();
   const [userInfo, setUserInfo] = useState({
-    email: "",
-    pswd: "",
+    username: "",
+    password: "",
   });
 
+  const { login } = useAuth();
+
+  /**
+   * Handles the user login process.
+   * Attempts to log in the user with the provided credentials.
+   * If successful, navigates to the home screen.
+   * If unsuccessful, displays an alert with an error message.
+   */
   const handleLogin = async () => {
     try {
-    } catch (error) {}
+      await login(userInfo.username, userInfo.password);
+      router.replace("/home");
+    } catch (error) {
+      console.log("Error al iniciar sesión:", error);
+      Alert.alert(
+        "Error",
+        "Credenciales incorrectas o servidor no disponible."
+      );
+    }
   };
 
   return (
     <>
       <StatusBar hidden={true} />
-      <View style={styles.container}>
-        <Text style={styles.title}>LooK</Text>
-        <View style={styles.modal_container}>
+      <View style={[styles.container, { backgroundColor: colors.primary }]}>
+        <Text style={[styles.title, { color: colors.secondary }]}>LooK</Text>
+        <View
+          style={[
+            styles.modalContainer,
+            { backgroundColor: colors.card, borderColor: colors.secondary },
+          ]}
+        >
           <View style={styles.row}>
-            {/* <FontAwesomeIcon
-                  size={35}
-                  icon={faSun}
-                  style={styles.theme_button}
-                /> */}
-            <Text style={styles.sub_title}>Iniciar Sesión</Text>
+            <Text style={[styles.subTitle, { color: colors.secondary }]}>
+              Iniciar Sesión
+            </Text>
           </View>
           <View>
-            <Text style={styles.input_text}>
-              Introduce tu nombre de usuario:{" "}
+            <Text style={[styles.inputText, { color: colors.secondary }]}>
+              Introduce tu nombre de usuario:
             </Text>
             <TextInput
               style={styles.input}
               placeholder="Usuario..."
-              value={userInfo.email}
-              onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
+              autoCapitalize="none"
+              value={userInfo.username}
+              onChangeText={(text) =>
+                setUserInfo({ ...userInfo, username: text })
+              }
             />
-            <Text style={styles.input_text}>Introduce la contraseña: </Text>
+            <Text style={[styles.inputText, { color: colors.secondary }]}>
+              Introduce la contraseña:
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Contraseña..."
-              value={userInfo.pswd}
-              onChangeText={(text) => setUserInfo({ ...userInfo, pswd: text })}
+              value={userInfo.password}
+              onChangeText={(text) =>
+                setUserInfo({ ...userInfo, password: text })
+              }
               secureTextEntry
             />
           </View>
           <Pressable
-            style={styles.send_button}
-            onPress={() => {
-              router.push("home");
-            }}
+            style={[
+              styles.sendButton,
+              {
+                backgroundColor: colors.primary,
+                borderColor: colors.secondary,
+              },
+            ]}
+            onPress={handleLogin}
           >
-            <Text style={styles.text_button}>Iniciar sesion</Text>
+            <Text style={[styles.textButton, { color: colors.secondary }]}>
+              Iniciar sesión
+            </Text>
           </Pressable>
-          <Text style={styles.help_text}>¿No tienes cuenta?</Text>
-          <Pressable
-            onPress={() => {
-              router.push("register");
-            }}
-          >
-            <Text style={styles.text_button}>Pulsa aqui.</Text>
+          <Text style={[styles.helpText, { color: colors.secondary }]}>
+            ¿No tienes cuenta?
+          </Text>
+          <Pressable onPress={() => router.push("/register")}>
+            <Text style={[styles.textButton, { color: colors.secondary }]}>
+              Pulsa aquí.
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -84,7 +117,7 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
   },
-  modal_container: {
+  modalContainer: {
     width: "90%",
     height: "80%",
     backgroundColor: "#FFF",
@@ -100,13 +133,13 @@ const styles = StyleSheet.create({
     height: "8%",
     backgroundColor: "lightgray",
   },
-  input_text: {
+  inputText: {
     width: 200,
     textAlign: "center",
     color: "#4E4187",
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: "15%",
+    marginTop: "13%",
   },
   title: {
     color: "#4E4187",
@@ -115,24 +148,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  sub_title: {
+  subTitle: {
     color: "#4E4187",
     fontSize: 50,
     fontWeight: "bold",
     textAlign: "center",
   },
-  text_button: {
+  textButton: {
     color: "#4E4187",
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
-  help_text: {
+  helpText: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
-  send_button: {
+  sendButton: {
     borderColor: "#4E4187",
     borderWidth: 2,
     color: "#4E4187",
@@ -143,7 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: "10%",
   },
-  theme_button: {
+  themeButton: {
     borderRadius: "100%",
     borderWidth: 2,
     borderColor: "black",
